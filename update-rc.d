@@ -147,13 +147,34 @@ fi
 bn=$1
 shift
 
+sn=$initd/$bn
+if [ -L "$sn" -a -n "$root" ]; then
+	if which readlink >/dev/null; then
+		while true; do
+			linksn="$(readlink "$sn")"
+			if [ -z "$linksn" ]; then
+				break
+			fi
+
+			sn="$linksn"
+			case "$sn" in
+				/*) sn="$root$sn" ;;
+				*)  sn="$initd/$sn" ;;
+			esac
+		done
+	else
+		echo "update-rc.d: readlink tool not present, cannot check whether \
+				$sn symlink points to a valid file." >&2
+	fi
+fi
+
 if [ $1 != "remove" ]; then
-	if [ ! -f "$initd/$bn" ]; then
+	if [ ! -f "$sn" ]; then
 		echo "update-rc.d: $initd/$bn: file does not exist" >&2
 		exit 1
 	fi
 else
-	if [ -f "$initd/$bn" ]; then
+	if [ -f "$sn" ]; then
 		if [ $force -eq 1 ]; then
 			echo "update-rc.d: $initd/$bn exists during rc.d purge (continuing)" >&2
 		else
