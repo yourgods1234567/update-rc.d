@@ -19,6 +19,7 @@ etcd="/etc/rc"
 notreally=0
 force=0
 dostart=0
+verbose=0
 
 usage()
 {
@@ -28,6 +29,7 @@ usage: update-rc.d [-n] [-f] [-r <root>] <basename> remove
        update-rc.d [-n] [-r <root>] [-s] <basename> start|stop NN runlvl [runlvl] [...] .
 		-n: not really
 		-f: force
+		-v: verbose
 		-r: alternate root path (default is /)
 		-s: invoke start methods if appropriate to current runlevel
 EOF
@@ -69,7 +71,7 @@ dolink()
 	lev=`echo $2 | cut -d/ -f1`
 	nn=`echo $2 | cut -d/ -f2`
 	fn="${etcd}${lev}.d/${startstop}${nn}${bn}"
-	echo "  $fn -> ../init.d/$bn"
+	[ $verbose -eq 1 ] && echo "  $fn -> ../init.d/$bn"
 	if [ $notreally -eq 0 ]; then
 		mkdir -p `dirname $fn`
  		ln -s ../init.d/$bn $fn
@@ -89,7 +91,7 @@ makelinks()
 		exit 0
 	fi
 
-	echo " Adding system startup for $initd/$bn ..."
+	echo " Adding system startup for $initd/$bn."
 
 	for i in $startlinks; do
 		dolink S $i
@@ -102,6 +104,10 @@ makelinks()
 while [ $# -gt 0 ]; do
 	case $1 in
 		-n)	notreally=1
+			shift
+			continue
+			;;
+		-v)	verbose=1
 			shift
 			continue
 			;;
