@@ -232,7 +232,7 @@ case $1 in
 				exit 1
 			fi
 			shift
-			NN=`printf %02d $1`
+			NN=`printf %02d $(expr $1 + 0)`
 			shift
 			while [ "x$1" != "x." ]; do
 				if [ $# -eq 0 ]; then
