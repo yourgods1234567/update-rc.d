@@ -114,7 +114,7 @@ renamelink()
         # or stop link to start link with a sequence number equal to the difference of 100 minus the original sequence number.
 	if ls ${etcd}${lev}.d/${oldstartstop}*${bn} >/dev/null 2>&1; then
 		oldnn=`basename ${etcd}${lev}.d/${oldstartstop}*${bn}|cut -c2-3`
-		newnn=$[100-$oldnn]
+		newnn=$(printf "%02d" $((100-${oldnn#0})))
 		[ $verbose -eq 1 ] && echo "rename ${etcd}${lev}.d/${oldstartstop}${oldnn}${bn} -> ${etcd}${lev}.d/${newstartstop}${newnn}${bn}"
 		if [ $notreally -eq 0 ];then
 			mv ${etcd}${lev}.d/${oldstartstop}${oldnn}${bn} ${etcd}${lev}.d/${newstartstop}${newnn}${bn}
